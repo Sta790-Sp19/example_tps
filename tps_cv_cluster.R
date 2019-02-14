@@ -2,7 +2,6 @@ library(fields)
 library(raster)
 library(dplyr)
 library(purrr)
-library(furrr)
 
 plan(multicore, workers = 8)
 
@@ -21,7 +20,7 @@ lambdas = c(0, 10^seq(-4,-1, length.out = 100))
 train = as_tibble(d_cv$train[[fold]])
 test  = as_tibble(d_cv$test[[fold]])
 
-res = future_map_dfr(
+res = mclapply(
   lambdas,
   function(lambda) {
     fit = fastTps(select(train ,x,y), train$z, theta=1, lambda=lambda)
@@ -29,8 +28,7 @@ res = future_map_dfr(
     rmse = sqrt( mean( (p - test$z)^2 ) )
     
     tibble(fold = fold, lambda = lambda, rmse = rmse)
-  },
-  .progress = TRUE
+  }
 )
 
 saveRDS(res, paste0("fold_",fold,".rds"))
