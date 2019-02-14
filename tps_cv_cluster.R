@@ -18,7 +18,7 @@ lambdas = c(0, 10^seq(-4,-1, length.out = 100))
 train = as_tibble(d_cv$train[[fold]])
 test  = as_tibble(d_cv$test[[fold]])
 
-res = mclapply(
+res = parallel::mclapply(
   lambdas,
   function(lambda) {
     fit = fastTps(select(train ,x,y), train$z, theta=1, lambda=lambda)
