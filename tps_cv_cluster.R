@@ -26,7 +26,8 @@ res = parallel::mclapply(
     rmse = sqrt( mean( (p - test$z)^2 ) )
     
     tibble(fold = fold, lambda = lambda, rmse = rmse)
-  }
+  },
+  mc.cores = 8  
 )
 
 saveRDS(res, paste0("fold_",fold,".rds"))
