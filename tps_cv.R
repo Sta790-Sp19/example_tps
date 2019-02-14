@@ -2,6 +2,7 @@ library(fields)
 library(raster)
 library(dplyr)
 library(purrr)
+library(furrr)
 
 truth = readRDS("true_surface.rds")
 obs = readRDS("obs_rast.rds")
@@ -11,14 +12,11 @@ kfold = 2
 
 d_cv = modelr::crossv_kfold(d, kfold)
 
-str(d_cv, max.level=1)
-d_cv$train[[1]] %>% as_tibble()
 
-
-pmap_dfr(
+res = pmap_dfr(
   list(seq_len(kfold), d_cv$train, d_cv$test),
   function(fold, train, test) {
-    lambdas = log(seq(1, 1.5, length.out = 100))
+    lambdas = c(0, 10^seq(-4,-1, length.out = 10))
     train = as_tibble(train)
     test  = as_tibble(test)
     
@@ -30,7 +28,15 @@ pmap_dfr(
         rmse = sqrt( mean( (p - test$z)^2 ) )
         
         tibble(fold = fold, lambda = lambda, rmse = rmse)
-      }  
+      },
+      .progress = TRUE
     )
   }
 )
+
+res
+
+res %>% 
+  group_by(fold) %>%
+  arrange(rmse) %>%
+  slice(1:3)
