@@ -3,8 +3,6 @@ library(raster)
 library(dplyr)
 library(purrr)
 
-plan(multicore, workers = 8)
-
 truth = readRDS("true_surface.rds")
 obs = readRDS("obs_rast.rds")
 d = readRDS("obs_d.rds")
