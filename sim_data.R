@@ -43,10 +43,3 @@ saveRDS(obs, "obs_rast.rds")
 saveRDS(d, "obs_d.rds")
 
 
-
-
-
-
-
-
-surface(fit)

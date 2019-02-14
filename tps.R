@@ -6,7 +6,7 @@ truth = readRDS("true_surface.rds")
 obs = readRDS("obs_rast.rds")
 d = readRDS("obs_d.rds")
 
-fit = fastTps(select(d,x,y), d$z, theta=1, lambda=0.1)
+fit = fastTps(select(d,x,y), d$z, theta=1, lambda=0.01)
 
 s = predictSurface(fit, nx = 200, ny=200)
 
@@ -17,5 +17,8 @@ plot(raster(s), main="TPS")
 
 d$z_pred = predict(fit)
 plot(d$z, d$z_pred)
+
+(d$z - d$z_pred)^2 %>% mean() %>% sqrt()
+
 
 system.time({fit = fastTps(select(d,x,y), d$z, theta=1, lambda=0.1)})
